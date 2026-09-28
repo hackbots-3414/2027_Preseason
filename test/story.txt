@@ -8,3 +8,7 @@ Chatgpt:Can you?
 
 Developers: ....
 
+cd = change directory
+
+ls = list
+
