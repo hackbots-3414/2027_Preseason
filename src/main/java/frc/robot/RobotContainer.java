@@ -1,10 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-package frc.robot;
-
-import static edu.wpi.first.units.Units.*;
+// Copyright (c) FIRST and other WPILiimport static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -73,10 +67,8 @@ public class RobotContainer {
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
         drivetrain.registerTelemetry(logger::telemeterize);
     }
-
     public Command getAutonomousCommand() {
         // Simple drive forward auton
         final var idle = new SwerveRequest.Idle();
