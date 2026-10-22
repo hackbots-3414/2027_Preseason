@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -111,6 +113,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+    
 
     /**
      * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -127,6 +130,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
+        setupSysId();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -151,6 +155,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, modules);
+        setupSysId();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -182,7 +187,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Matrix<N3, N1> visionStandardDeviation,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
+
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
+        setupSysId();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -256,6 +263,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
 
+
+    public void setupSysId() {
+        SmartDashboard.putData("Quasistatic Forward Drive", m_sysIdRoutineTranslation.quasistatic(Direction.kForward));
+        SmartDashboard.putData("Quasistatic Reverse Drive", m_sysIdRoutineTranslation.quasistatic(Direction.kReverse));
+        SmartDashboard.putData("Quasistatic Forward Rotation", m_sysIdRoutineRotation.quasistatic(Direction.kForward));
+        SmartDashboard.putData("Quasistatic Reverse Rotation", m_sysIdRoutineRotation.quasistatic(Direction.kReverse));
+        SmartDashboard.putData("Quasistatic Reverse Steer", m_sysIdRoutineSteer.quasistatic(Direction.kReverse));
+        SmartDashboard.putData("Quasistatic Forward Steer", m_sysIdRoutineSteer.quasistatic(Direction.kForward));
+        SmartDashboard.putData("Dynamic Forward Drive", m_sysIdRoutineTranslation.dynamic(Direction.kForward));
+        SmartDashboard.putData("Dynamic Reverse Drive", m_sysIdRoutineTranslation.dynamic(Direction.kReverse));
+        SmartDashboard.putData("Dynamic Forward Rotation", m_sysIdRoutineRotation.dynamic(Direction.kForward));
+        SmartDashboard.putData("Dynamic Reverse Rotation", m_sysIdRoutineRotation.dynamic(Direction.kReverse));
+        SmartDashboard.putData("Dynamic Forward Steer", m_sysIdRoutineSteer.dynamic(Direction.kForward));
+        SmartDashboard.putData("Dynamic Reverse Steer", m_sysIdRoutineSteer.dynamic(Direction.kReverse));
+    }
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
      * while still accounting for measurement noise.
