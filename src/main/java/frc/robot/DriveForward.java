@@ -4,22 +4,26 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveForward extends Command {
-final CommandSwerveDrivetrain drivetrain = new CommandSwerveDrivetrain(null, null);
   /** Creates a new DriveForward. */
 private Pose2d finalPose;
 private Translation2d travelLength;
-
-  public DriveForward(Translation2d travelLength) {    
+private CommandSwerveDrivetrain drivetrain;
+private double remainingDistance;
+public DriveForward(Translation2d travelLength, CommandSwerveDrivetrain drivetrain) {    
     // Use addRequirements() here to declare subsystem dependencies.
    this.travelLength = travelLength;
+   this.drivetrain = drivetrain;
   }
 
   // Called when the command is initially scheduled.
@@ -32,22 +36,32 @@ private Translation2d travelLength;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-// goal : start driving  forward 
+    final double baseSpeed = 0.7;
+    remainingDistance = finalPose.minus(drivetrain.getPose()).getMeasureX().magnitude();drivetrain.applyRequest(() -> new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds(0, 0, 0)));
+drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds(baseSpeed * remainingDistance, 0, 0)));
+    // goal : start driving  forward 
+
 // activate drive motors | which way? how fast? (direction, rotations / second, voltage)
   }
 
-  // Called once the command ends or is interrupted.
+  // Called once the command ends or is interrupted..(
   @Override
   public void end(boolean interrupted) {
+    drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds(0,0,0)));
     // tell motors to stop: | motors drive with power 0
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    final double tolerance = 0.1;
+    if (remainingDistance > 15 || remainingDistance < tolerance) {
+      return true;
+    } else {
+      return false;
+    }
     //if wer're measuring seconds, has the command been running for 5 seconds? 
     //if we're trying to get to a distance: are we at our desired point?
     // return true
-    return false;
   }
 }
