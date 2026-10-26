@@ -1,32 +1,24 @@
+
 //process to make robot go forward
 //1st
 //initialise
-  //get position of robot
-    //include both position and heading
+//get position of robothttps://docs.
+//include both position and heading
 
 //2nd
 //execute
-  //start driving forwards
-    //activate drive motors | Which way? How fast? (directio, rotation/second, voltage)
+//start driving forwards
+//activate drive motors | Which way? How fast? (direction, rotation/second, voltage)
 
 //3rd
 //isFinished
-  //if we were measuring seconds, has comand been running for desired time?
-  //if we were trying to get to a distance, sre we at our desired point?
-  //return true
+//if we were measuring seconds, has comand been running for desired time?
+//if we were trying to get to a distance, are we at our desired point?
+//return true
 
 //4th
 //end
-  //tell motors to stop | motors dive with power 0
-
-
-
-
-
-
-
-
-
+//tell motors to stop | motors drive with power 0
 
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
@@ -34,22 +26,28 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/* You should consider using the more terse Command factories API instead wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 
 public class Dr1v3F0rward extends Command {
   /** Creates a new Dr1v3F0rward. */
-  final CommandSwerveDrivetrain drivetrain = new CommandSwerveDrivetrain(null, null); 
+
   private Pose2d finalPose;
+  private double remainingDistance;
   private Translation2d travelLength;
-  public Dr1v3F0rward(Translation2d travelLength) {
+  private CommandSwerveDrivetrain drivetrain;
+
+  public Dr1v3F0rward(Translation2d travelLength, CommandSwerveDrivetrain drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.travelLength = travelLength;
+    this.drivetrain = drivetrain;
   }
 
   // Called when the command is initially scheduled.
@@ -60,16 +58,27 @@ public class Dr1v3F0rward extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    remainingDistance = finalPose.minus(drivetrain.getPose()).getMeasureX().magnitude();
+    final double baseSpeed = 0.7;
+    drivetrain.setControl(
+        new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds(baseSpeed * remainingDistance, 0, 0)));
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    drivetrain.setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds(0, 0, 0)));
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    final double toletrance = 0.1;
+    if (remainingDistance > 15 || remainingDistance < toletrance) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
-
