@@ -1,4 +1,6 @@
-# AI Log of Prompts
+# AI Engineering Notebook
+
+This is the place to document vibe coding prompts, output or robot behavior we like and do not like.  It's not science unless we write it down!
 
 
 
@@ -8,7 +10,7 @@ Please create a WPILib robot project that models an LED subsystem using a CTRE C
 
 
 
-Let's model an LED array of 36 elements, with 12 on the robot's left side, 12 across the top, and 12 down the right.  
+Let's model an LED array of 36 elements, with 12 on the robot's left side, 12 across the top, and 12 down the right.
 
 
 
