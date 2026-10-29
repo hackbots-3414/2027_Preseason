@@ -1,8 +1,8 @@
-\# AI Log of Prompts
+# AI Log of Prompts
 
 
 
-\## Initial Prompt
+## Initial Prompt
 
 Please create a WPILib robot project that models an LED subsystem using a CTRE CANdle LED controller.  We must test via Simulation, so indicating LED output on the Elastic SmartDashboard is needed.
 
@@ -20,7 +20,7 @@ Let's use a button press (Command) on Elastic to change the LEDs to show a red t
 
 
 
-\### Output
+### Output
 
 Complete WPILib Robot project with LED subsystem, unit test, and ready for deployment to a test chassis with CTRE CANdle.
 
