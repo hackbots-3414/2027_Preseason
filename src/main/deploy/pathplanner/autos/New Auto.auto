@@ -5,22 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "To Infinity"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "And Beyond"
-                }
-              }
-            ]
+            "pathName": "New Path"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New New Path"
           }
         }
       ]
