@@ -10,11 +10,17 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -40,6 +46,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
     private Pose2d m_pose;
+    private SwerveDriveState state;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -135,6 +142,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        state = getState();
+        setupPathPlanner();
     }
 
     /**
@@ -160,6 +169,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setupPathPlanner();
     }
 
     /**
@@ -194,6 +204,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        setupPathPlanner();
     }
 
     /**
@@ -231,6 +242,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Override
     public void periodic() {
         m_pose = this.getState().Pose;
+        state = getState();
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -328,4 +340,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Pose2d getPose() {
         return m_pose;
     }
+
+    public void driveRobotRelative(ChassisSpeeds speeds){
+        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds));
+    }
+
+   public void setupPathPlanner() {
+    RobotConfig config;
+
+    try{
+        config = RobotConfig.fromGUISettings();
+    }catch (Exception e){
+        config = new RobotConfig(0, 0, null, new Translation2d());
+        e.printStackTrace();
+
+}
+
+        // Create AutoBuilder
+        AutoBuilder.configure(
+            this::getPose,
+            this::resetPose,
+            () -> state.Speeds,
+            (speeds,Feedforwards) -> driveRobotRelative(speeds),
+            new PPHolonomicDriveController(
+                new PIDConstants(0,0,0), new PIDConstants(0,0,0)
+                ),
+            config,
+            () -> {
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()){
+                return alliance.get() == DriverStation.Alliance.Red;
+            }
+            return false;
+
+        },
+        this);
+}
+
 }

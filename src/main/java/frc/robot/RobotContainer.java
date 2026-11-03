@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -89,10 +90,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(
-        drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-        new DriveForward(new Translation2d(10, 0), drivetrain)
-        );
+        return new PathPlannerAuto("New Auto");
         
     }
 }
