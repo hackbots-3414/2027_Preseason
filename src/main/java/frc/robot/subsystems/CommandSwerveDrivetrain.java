@@ -364,7 +364,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             () -> state.Speeds, 
             (speeds,Feedforwards) -> driveRobotRelative(speeds), 
             new PPHolonomicDriveController(
-                new PIDConstants(0,0,0), new PIDConstants(0,0,0)
+                new PIDConstants(3,0,0), new PIDConstants(3,0,0)
                 ), 
             config, 
             () -> {
