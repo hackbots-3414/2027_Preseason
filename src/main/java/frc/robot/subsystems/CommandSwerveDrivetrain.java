@@ -10,6 +10,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -25,13 +26,14 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.Robot;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -47,6 +49,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private double m_lastSimTime;
     private Pose2d m_pose;
     private SwerveDriveState state;
+    private Field2d field;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -142,8 +145,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        state = getState();
         setupPathPlanner();
+        field = new Field2d();
+        SmartDashboard.putData( "Field", field);
     }
 
     /**
@@ -170,6 +174,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         setupPathPlanner();
+        field = new Field2d();
+        SmartDashboard.putData( "Field", field);
     }
 
     /**
@@ -205,6 +211,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         setupPathPlanner();
+        field = new Field2d();
+        SmartDashboard.putData( "Field", field);
     }
 
     /**
@@ -242,7 +250,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Override
     public void periodic() {
         m_pose = this.getState().Pose;
-        state = getState();
+        state = this.getState();
+        field.setRobotPose(m_pose);
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -276,6 +285,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
+
+
 
 
     public void setupSysId() {
@@ -345,36 +356,40 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(speeds));
     }
 
-   public void setupPathPlanner() {
-    RobotConfig config;
-
-    try{
-        config = RobotConfig.fromGUISettings();
-    }catch (Exception e){
-        config = new RobotConfig(0, 0, null, new Translation2d());
-        e.printStackTrace();
-
-}
+    
+    public void setupPathPlanner(){
+        RobotConfig config;
+        try{
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e){
+            config = new RobotConfig(0, 0, null, new Translation2d());
+            e.printStackTrace();
+        }
 
         // Create AutoBuilder
         AutoBuilder.configure(
-            this::getPose,
-            this::resetPose,
-            () -> state.Speeds,
-            (speeds,Feedforwards) -> driveRobotRelative(speeds),
+            this::getPose, 
+            this::resetPose, 
+            () -> state.Speeds, 
+            (speeds,Feedforwards) -> driveRobotRelative(speeds), 
             new PPHolonomicDriveController(
-                new PIDConstants(0,0,0), new PIDConstants(0,0,0)
-                ),
-            config,
+                new PIDConstants(3,0,0), new PIDConstants(3,0,0)
+                ), 
+            config, 
             () -> {
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()){
-                return alliance.get() == DriverStation.Alliance.Red;
-            }
-            return false;
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()){
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            }, 
+            this);
 
-        },
-        this);
-}
+
+
+
+    }
+    
+
 
 }
