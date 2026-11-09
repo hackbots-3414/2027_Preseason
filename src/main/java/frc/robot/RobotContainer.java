@@ -90,7 +90,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-       return new PathPlannerAuto("Figure Eight Auto");
+       return new PathPlannerAuto("Chaitrika's Auto");
         
     }
 }
