@@ -89,7 +89,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-       return new PathPlannerAuto("Infinity Sign");
+        return new PathPlannerAuto("New Auto");
         
     }
 }
