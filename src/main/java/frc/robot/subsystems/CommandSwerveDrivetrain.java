@@ -26,6 +26,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -48,7 +49,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private double m_lastSimTime;
     private Pose2d m_pose;
     private SwerveDriveState state;
-
+    private Field2d field;
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -144,6 +145,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         setupPathPlanner();
+        field = new Field2d();
+        SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -170,6 +173,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         setupPathPlanner();
+        field = new Field2d();
+        SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -205,6 +210,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
         setupPathPlanner();
+        field = new Field2d();
+        SmartDashboard.putData("Field", field);
     }
 
     /**
@@ -243,6 +250,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void periodic() {
         m_pose = this.getState().Pose;
         state = this.getState();
+        field.setRobotPose(m_pose);
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
