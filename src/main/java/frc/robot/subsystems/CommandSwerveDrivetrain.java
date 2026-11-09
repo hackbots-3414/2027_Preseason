@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -39,7 +40,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
-    private Pose2d m_estimatedPose;
+    private Pose2d m_pose;
+    private SwerveDriveState state;
+    private final SwerveRequest.ApplyRobotSpeeds robotSpeeds = new SwerveRequest.ApplyRobotSpeeds()
+      .withDriveRequestType(DriveRequestType.Velocity);
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -327,9 +331,46 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Pose2d getPose() {
-        return m_estimatedPose;
-    
-        //Need to make real getPose logic
-        // throw new UnsupportedOperationException("Unimplemented method 'getPose'");
+        return getState().Pose;
     }
+
+    public void driveRobotRelative(ChassisSpeeds speeds){
+        setControl(robotSpeeds.withSpeeds(speeds));
+    }
+
+    
+    public void setupPathPlanner(){
+        RobotConfig config;
+        try{
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e){
+            throw new RuntimeException();
+        }
+
+        // Create AutoBuilder
+        AutoBuilder.configure(
+            this::getPose, 
+            this::resetPose, 
+            () -> state.Speeds, 
+            (speeds,feedforwards) -> driveRobotRelative(speeds), 
+            new PPHolonomicDriveController(
+                new PIDConstants(3, 0,0), new PIDConstants(3,0,0)
+                ), 
+            config, 
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()){
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            }, 
+            this);
+
+
+
+
+    }
+    
+
+
 }
