@@ -1,0 +1,116 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.219897727272727,
+        "y": 4.055613636363637
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1271363636363634,
+        "y": 2.2931477272727268
+      },
+      "isLocked": false,
+      "linkedName": "Figure Eight start"
+    },
+    {
+      "anchor": {
+        "x": 4.528625,
+        "y": 2.313761363636364
+      },
+      "prevControl": {
+        "x": 3.6113181818181816,
+        "y": 2.1900795454545454
+      },
+      "nextControl": {
+        "x": 5.724188696859869,
+        "y": 2.4749609632129763
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 11.877386363636365,
+        "y": 5.807772727272727
+      },
+      "prevControl": {
+        "x": 10.87772061927698,
+        "y": 5.781919302849639
+      },
+      "nextControl": {
+        "x": 13.072977272727274,
+        "y": 5.838693181818183
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 13.650159090909092,
+        "y": 4.055613636363637
+      },
+      "prevControl": {
+        "x": 13.619238636363637,
+        "y": 5.11721590909091
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Figure Eight end"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 20.854458039578418
+    },
+    {
+      "waypointRelativePos": 1.95,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.4380610412926391,
+      "maxWaypointRelativePos": 1.5511669658886893,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 5.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 1.3464991023339317,
+      "endWaypointRelativePos": 1.6750448833034113,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 4.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 4.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}
