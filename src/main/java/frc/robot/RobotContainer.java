@@ -61,7 +61,7 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-
+        joystick.button(4).onTrue(Commands.runOnce(() -> drivetrain.setOperatorPerspectiveForward(drivetrain.getPose().getRotation())).ignoringDisable(true));
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftX(), -joystick.getLeftY()))
@@ -90,7 +90,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-       return new PathPlannerAuto("New Auto");
+       return new PathPlannerAuto("Infinty Auton");
         
     }
 }
+
