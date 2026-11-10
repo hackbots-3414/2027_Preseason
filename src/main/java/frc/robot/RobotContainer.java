@@ -1,5 +1,8 @@
 // Copyright (c) FIRST and other WPILiimport static edu.wpi.first.units.Units.*;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
