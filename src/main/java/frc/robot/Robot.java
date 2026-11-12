@@ -29,12 +29,10 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run(); 
-        m_robotContainer.elevator.updateTelemetry();
     }
 
     @Override
     public void disabledInit() {
-        m_robotContainer.elevator.stop();
     }
 
     @Override
@@ -67,9 +65,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        m_robotContainer.elevator.reachGoal(SmartDashboard.getNumber("Target Elevator Height", 0));
-        m_robotContainer.elevator.simulationPeriodic();
-
     }
 
     @Override
