@@ -1,0 +1,33 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems.elevator;
+
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+
+/** Add your docs here. */
+public class ElevatorIOSim implements ElevatorIO{
+
+    private DCMotorSim motorSim;
+    private EncoderSim encoderSim;
+    private ProfiledPIDController pidControllerSim;
+    private ElevatorFeedforward feedforwardSim;
+
+    public void setTarget(double target) {
+
+    }
+
+    @Override
+    public void updateInfo() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateInfo'");
+    }
+
+    @Override
+    public boolean isReady() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isReady'");
+    }
+    
+}
