@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.simulation.PWMSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class ElevatorIOSim implements ElevatorIO{
@@ -40,7 +41,7 @@ public class ElevatorIOSim implements ElevatorIO{
         encoderSim = new EncoderSim(new Encoder(0, 1));
         pidControllerSim = new ProfiledPIDController(0,0,0, new TrapezoidProfile.Constraints(2.45, 2.45));
         feedforwardSim = new ElevatorFeedforward(0,0.762, 0.762, 0);
-        elevatorSim = new ElevatorSim(0, 0, DCMotor.getVex775Pro(4), 0, 1.25, true, 0);
+        elevatorSim = new ElevatorSim(0.762, 1, DCMotor.getVex775Pro(4), 0, 1.25, true, 0);
         mechanism2d = new Mechanism2d(1, 1.5);
         mechanism2dRoot = mechanism2d.getRoot("Elevator Root", 0.5, 0);   
         elevatorArm = new MechanismLigament2d("Elevator Arm", 0, 90); 
@@ -58,13 +59,24 @@ public class ElevatorIOSim implements ElevatorIO{
 
     @Override
     public void updateInfo() {
-    // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateInfo'");
+        elevatorSim.update(0.2);
+        encoderSim.setDistance(elevatorSim.getPositionMeters());
+        elevatorArm.setLength(encoderSim.getDistance());
+            
+        SmartDashboard.putData("Elevator/Elevator Sim", mechanism2d);
+        SmartDashboard.putBoolean("Elevator/At Target", isReady());
+
     }
 
     @Override
     public boolean isReady() {
-
-        throw new UnsupportedOperationException("Unimplemented method 'isReady'");
+        return pidControllerSim.atGoal();
     }
+
+
+
+
+
+
+
 }
