@@ -10,6 +10,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -41,7 +42,7 @@ public class ElevatorIOSim implements ElevatorIO {
     encoderSim = new EncoderSim(new Encoder(0, 1));
     pidControllerSim = new ProfiledPIDController(1.25, 0.25, 0.5, new TrapezoidProfile.Constraints(2.45, 2.45));
     feedforwardSim = new ElevatorFeedforward(0, 0.762, 0.762, 0);
-    elevatorSim = new ElevatorSim(0.762, 1, DCMotor.getVex775Pro(4), 0, 1.25, true, 0);
+    elevatorSim = new ElevatorSim(0.762, 0.1, DCMotor.getVex775Pro(4), 0, 1.25, true, 0.1);
     mechanism2d = new Mechanism2d(1, 1.5);
     mechanism2dRoot = mechanism2d.getRoot("Elevator Root", 0.5, 0);
     elevatorArm = new MechanismLigament2d("Elevator Arm", 0, 90);
@@ -56,11 +57,12 @@ public class ElevatorIOSim implements ElevatorIO {
     double pidOutput = pidControllerSim.calculate(encoderSim.getDistance());
     double feedforwardOutput = feedforwardSim.calculate(pidControllerSim.getGoal().velocity);
     motor.setVoltage(feedforwardOutput + pidOutput);
+    elevatorSim.setInputVoltage(motorSim.getSpeed() * RobotController.getBatteryVoltage());
   }
 
   @Override
   public void updateInfo() {
-   elevatorSim.update(0.2);
+   elevatorSim.update(0.02);
    encoderSim.setDistance(elevatorSim.getPositionMeters());
    elevatorArm.setLength(encoderSim.getDistance());
 
