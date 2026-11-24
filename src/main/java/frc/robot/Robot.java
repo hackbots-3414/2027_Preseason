@@ -6,7 +6,11 @@ package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
 
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -20,14 +24,29 @@ public class Robot extends TimedRobot {
         .withTimestampReplay()
         .withJoystickReplay();
 
+    private int m_lowVoltageLogCycle = 0;
+
     public Robot() {
+        DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
         m_robotContainer = new RobotContainer();
     }
 
     @Override
     public void robotPeriodic() {
         m_timeAndJoystickReplay.update();
-        CommandScheduler.getInstance().run(); 
+        CommandScheduler.getInstance().run();
+
+        double batteryVoltage = RobotController.getBatteryVoltage();
+        SmartDashboard.putNumber("Battery Voltage", batteryVoltage);
+        if (batteryVoltage < 7.0) {
+            if (m_lowVoltageLogCycle++ % 50 == 0) {
+                DataLogManager.log("BROWNOUT WARNING: Battery voltage " + batteryVoltage + " V");
+                DriverStation.reportWarning("BROWNOUT: Battery " + batteryVoltage + " V", false);
+            }
+        } else {
+            m_lowVoltageLogCycle = 0;
+        }
     }
 
     @Override
