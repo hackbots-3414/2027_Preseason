@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -57,6 +58,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
+
+    private boolean m_emergencyStop = false;
+    private int m_lowVoltageLogCycle = 0;
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -281,6 +285,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        double batteryVoltage = RobotController.getBatteryVoltage();
+        SmartDashboard.putNumber("Battery Voltage", batteryVoltage);
+
+        boolean brownout = RobotController.isBrownedOut();
+        if (batteryVoltage < 7.0 || brownout) {
+            if (m_lowVoltageLogCycle++ % 50 == 0) {
+                String msg = brownout
+                    ? "EMERGENCY STOP: Brownout active! Voltage: " + batteryVoltage + " V"
+                    : "LOW VOLTAGE WARNING: " + batteryVoltage + " V";
+                DataLogManager.log(msg);
+                DriverStation.reportWarning(msg, false);
+            }
+        } else {
+            m_lowVoltageLogCycle = 0;
+        }
+        m_emergencyStop = brownout;
+    }
+
+    public boolean isEmergencyStop() {
+        return m_emergencyStop;
     }
 
     private void startSimThread() {

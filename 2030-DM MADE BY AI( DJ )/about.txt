@@ -1,0 +1,25 @@
+Project: 2030-DM
+Author:  DJ
+Branch:  Sai_Max
+
+Changes implemented by AI (DJ's notebook spec):
+  - PS5 controller (Left stick = translate, Right stick X = rotate)
+  - Field-centric swerve drive via CTRE Phoenix 6 / CommandSwerveDrivetrain
+  - WPILib DataLogManager (.wpilog files, AdvantageKit-compatible format)
+  - Battery voltage streamed to SmartDashboard every cycle
+  - Low-voltage warning logged when battery < 7 V (rate-limited to once/sec)
+  - Emergency stop: drivetrain locks in brake mode on brownout detection;
+    resumes automatically when brownout clears
+
+Controller map (PS5):
+  Left  stick up/down/left/right  -> forward / back / strafe left / strafe right
+  Right stick left/right          -> rotate CCW / CW
+  Triangle                        -> re-zero field-centric heading
+  Cross (hold)                    -> brake lock
+  Circle (hold)                   -> point wheels at left-stick direction
+  L1                              -> seed field-centric (re-zero)
+
+Key files touched:
+  src/main/java/frc/robot/RobotContainer.java          (PS5 bindings + emergency-stop gate)
+  src/main/java/frc/robot/Robot.java                   (DataLogManager init)
+  src/main/java/frc/robot/subsystems/CommandSwerveDrivetrain.java  (battery + emergency stop)
